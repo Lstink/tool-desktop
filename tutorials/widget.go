@@ -33,8 +33,9 @@ func makeFormTabXl(w fyne.Window) fyne.CanvasObject {
 			}()
 
 			w2 := fyne.CurrentApp().NewWindow("解析结果")
+			l := widget.NewLabel(input.Text)
 			table := handleTableData(w, input.Text, device.XLDevice)
-			w2.SetContent(table)
+			w2.SetContent(container.NewVBox(l, table))
 			w2.Show()
 			// 解析数据
 		},
@@ -66,8 +67,9 @@ func makeFormTabCx(w fyne.Window) fyne.CanvasObject {
 			}()
 
 			w2 := fyne.CurrentApp().NewWindow("解析结果")
+			l := widget.NewLabel(input.Text)
 			table := handleTableData(w, input.Text, device.XLDevice)
-			w2.SetContent(table)
+			w2.SetContent(container.NewVBox(l, table))
 			w2.Show()
 			// 解析数据
 		},
@@ -83,7 +85,7 @@ func handleTableData(_ fyne.Window, msg string, flag device.DeviceType) fyne.Can
 
 	// 解析获取到的数据
 	var res = binding.NewString()
-	var data []message.Data
+	var data message.Data
 	var errMsg string
 
 	if msg != "" {
@@ -94,16 +96,16 @@ func handleTableData(_ fyne.Window, msg string, flag device.DeviceType) fyne.Can
 		}
 	}
 
-	t := getTable(data)
+	t := getTable(data.List)
 
-	res.Set(fmt.Sprintf("数据解析成功！"))
+	res.Set(fmt.Sprintf("数据解析成功！(cmd: 0x%x; %s)", data.Cmd, data.Remark))
 
 	c := container.NewVBox(widget.NewLabelWithData(res), container.New(layout.NewGridWrapLayout(fyne.NewSize(640, 460)), t))
 	return c
 
 }
 
-func getTable(data []message.Data) fyne.CanvasObject {
+func getTable(data []message.Item) fyne.CanvasObject {
 	t := widget.NewTable(
 		// 数据列数量， 数据行数量
 		func() (int, int) {

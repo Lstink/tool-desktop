@@ -12,7 +12,7 @@ const (
 )
 
 // ParseDataForMessage 解析提交过来的数据
-func ParseDataForMessage(msg string, flag DeviceType) (res []message.Data, errMsg string) {
+func ParseDataForMessage(msg string, flag DeviceType) (res message.Data, errMsg string) {
 
 	switch flag {
 	case XLDevice:
@@ -24,13 +24,13 @@ func ParseDataForMessage(msg string, flag DeviceType) (res []message.Data, errMs
 }
 
 // 持续协议解析
-func cxParse(msg string) (res []message.Data, errMsg string) {
+func cxParse(msg string) (res message.Data, errMsg string) {
 
 	return
 }
 
 // 小蓝协议解析
-func xlParse(msg string) (res []message.Data, errMsg string) {
+func xlParse(msg string) (res message.Data, errMsg string) {
 	// 解析数据
 	xl := message.NewXlMessage(msg)
 	// 判断数据长度
