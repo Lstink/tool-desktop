@@ -14,6 +14,7 @@ const (
 	XlStartCharging        = 0x34
 	XlUserMoneyUpdateBack  = 0x41
 	XlUpdateUserMoney      = 0x42
+	XlStartChargingBicycle = 0x74
 )
 
 type HexParse int
@@ -85,6 +86,9 @@ func (xl XlMessage) GetParseData() (data Data) {
 	case XlUserMoneyUpdateBack:
 		fmt.Println("用户余额更新应答")
 		data = xl.XlUserMoneyUpdateBack()
+	case XlStartChargingBicycle:
+		fmt.Println("小蓝单车启动充电")
+		data = xl.XlStartChargingBicycle()
 	}
 
 	return
@@ -218,6 +222,52 @@ func (xl XlMessage) XlUserMoneyUpdateBack() (data Data) {
 	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[0:14], "0")})
 	data.List = append(data.List, Item{Key: "物理卡号", Value: getParseData(xl.Data[14:30], Bin)})
 	data.List = append(data.List, Item{Key: "修改结果", Value: getParseData(xl.Data[30:32], Bin)})
+
+	return
+}
+
+// XlStartChargingBicycle 小蓝单车远程控制启机
+func (xl XlMessage) XlStartChargingBicycle() (data Data) {
+	data.Cmd = xl.Command
+	data.Remark = "小蓝单车远程控制启机"
+	// 解析数据
+	data.List = append(data.List, Item{Key: "交易流水号", Value: strings.TrimLeft(xl.Data[0:32], "0")})
+	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[32:46], "0")})
+	data.List = append(data.List, Item{Key: "枪号", Value: strings.TrimLeft(xl.Data[46:48], "0")})
+	data.List = append(data.List, Item{Key: "逻辑卡号", Value: strings.TrimLeft(xl.Data[48:64], "0")})
+	data.List = append(data.List, Item{Key: "账户余额", Value: getParseData(xl.Data[64:72], Bin)})
+	data.List = append(data.List, Item{Key: "充电模式参数", Value: getParseData(xl.Data[72:76], Bin)})
+	data.List = append(data.List, Item{Key: "账户类型", Value: getParseData(xl.Data[76:78], Bin)})
+	data.List = append(data.List, Item{Key: "计费方式", Value: getParseData(xl.Data[78:80], Bin)})
+	data.List = append(data.List, Item{Key: "充电模式", Value: getParseData(xl.Data[80:82], Bin)})
+	data.List = append(data.List, Item{Key: "最小功率", Value: getParseData(xl.Data[82:86], Bin)})
+	data.List = append(data.List, Item{Key: "最大功率", Value: getParseData(xl.Data[86:90], Bin)})
+	data.List = append(data.List, Item{Key: "最大允许电流", Value: getParseData(xl.Data[90:94], Bin)})
+	data.List = append(data.List, Item{Key: "空载阈值电流", Value: getParseData(xl.Data[94:98], Bin)})
+	data.List = append(data.List, Item{Key: "充满阈值电流", Value: getParseData(xl.Data[98:102], Bin)})
+	data.List = append(data.List, Item{Key: "空载阈值功率", Value: getParseData(xl.Data[102:106], Bin)})
+	data.List = append(data.List, Item{Key: "充满阈值功率", Value: getParseData(xl.Data[106:110], Bin)})
+	data.List = append(data.List, Item{Key: "空载等待时间", Value: getParseData(xl.Data[110:114], Bin)})
+	data.List = append(data.List, Item{Key: "充满等待时间", Value: getParseData(xl.Data[114:118], Bin)})
+	data.List = append(data.List, Item{Key: "免费充电时间", Value: getParseData(xl.Data[118:122], Bin)})
+	data.List = append(data.List, Item{Key: "最大允许充电时间", Value: getParseData(xl.Data[122:126], Bin)})
+	data.List = append(data.List, Item{Key: "是否充满断电", Value: getParseData(xl.Data[126:128], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段1(单 价)", Value: getParseData(xl.Data[128:132], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段1（功 率）", Value: getParseData(xl.Data[132:136], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段2(单 价)", Value: getParseData(xl.Data[136:140], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段2（功 率）", Value: getParseData(xl.Data[140:144], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段3(单 价)", Value: getParseData(xl.Data[144:148], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段3（功 率）", Value: getParseData(xl.Data[148:152], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段4(单 价)", Value: getParseData(xl.Data[152:156], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段4（功 率）", Value: getParseData(xl.Data[156:160], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段5(单 价)", Value: getParseData(xl.Data[160:164], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段5（功 率）", Value: getParseData(xl.Data[164:168], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段6(单 价)", Value: getParseData(xl.Data[168:172], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段6（功 率）", Value: getParseData(xl.Data[172:176], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段7(单 价)", Value: getParseData(xl.Data[176:180], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段7（功 率）", Value: getParseData(xl.Data[180:184], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段8(单 价)", Value: getParseData(xl.Data[184:188], Bin)})
+	data.List = append(data.List, Item{Key: "功率分段8（功 率）", Value: getParseData(xl.Data[188:192], Bin)})
 
 	return
 }
