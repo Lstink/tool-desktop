@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	XlRemoteConfirmBicycle = 0x72
+	//XlRemoteConfirmBicycle = 0x72
 	XlOrderLogBicycle      = 0x79
 	XlGetBalanceForBusBack = 0x0a
+	XlOrderLogBus          = 0x39
 	XlStartCharging        = 0x34
 	XlUserMoneyUpdateBack  = 0x41
 	XlUpdateUserMoney      = 0x42
@@ -23,6 +24,7 @@ const (
 	CpTIme HexParse = 3
 	Card1  HexParse = 4
 	Card2  HexParse = 5
+	Ascii  HexParse = 6
 )
 
 type XlMessage struct {
@@ -64,28 +66,33 @@ func (xl XlMessage) Valid() bool {
 func (xl XlMessage) GetParseData() (data Data) {
 	switch xl.Command {
 	case XlOrderLogBicycle:
+		fmt.Println("上传单车订单")
+		data = xl.OrderLogBicycle()
+	case XlOrderLogBus:
+		fmt.Println("上传汽车订单")
+		data = xl.OrderLogBus()
 		fmt.Println("上传订单")
-		data = xl.OrderLogBicycle(xl.Command)
+		data = xl.OrderLogBicycle()
 	case XlGetBalanceForBusBack:
 		fmt.Println("充电桩计费模型请求(汽车桩)回复")
-		data = xl.GetBalanceForBusBack(xl.Command)
+		data = xl.GetBalanceForBusBack()
 	case XlStartCharging:
 		fmt.Println("运营平台远程启动汽车桩")
-		data = xl.RemoteStartCharging(xl.Command)
+		data = xl.RemoteStartCharging()
 	case XlUpdateUserMoney:
 		fmt.Println("运营平台远程启动汽车桩")
-		data = xl.XlUpdateUserMoney(xl.Command)
+		data = xl.XlUpdateUserMoney()
 	case XlUserMoneyUpdateBack:
 		fmt.Println("用户余额更新应答")
-		data = xl.XlUserMoneyUpdateBack(xl.Command)
+		data = xl.XlUserMoneyUpdateBack()
 	}
 
 	return
 }
 
-func (xl XlMessage) OrderLogBicycle(cmd int) (data Data) {
+func (xl XlMessage) OrderLogBicycle() (data Data) {
 
-	data.Cmd = cmd
+	data.Cmd = xl.Command
 	data.Remark = "单车桩订单记录"
 	// 解析数据
 	data.List = append(data.List, Item{Key: "交易流水号", Value: strings.TrimLeft(xl.Data[0:32], "0")})
@@ -112,8 +119,8 @@ func (xl XlMessage) OrderLogBicycle(cmd int) (data Data) {
 	return
 }
 
-func (xl XlMessage) GetBalanceForBusBack(cmd int) (data Data) {
-	data.Cmd = cmd
+func (xl XlMessage) GetBalanceForBusBack() (data Data) {
+	data.Cmd = xl.Command
 	data.Remark = "汽车桩下发计费模型"
 	// 解析数据
 	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[0:14], "0")})
@@ -137,8 +144,8 @@ func (xl XlMessage) GetBalanceForBusBack(cmd int) (data Data) {
 }
 
 // RemoteStartCharging 汽车桩远程控制启机
-func (xl XlMessage) RemoteStartCharging(cmd int) (data Data) {
-	data.Cmd = cmd
+func (xl XlMessage) RemoteStartCharging() (data Data) {
+	data.Cmd = xl.Command
 	data.Remark = "汽车桩远程控制启机"
 	// 解析数据
 	data.List = append(data.List, Item{Key: "交易流水号", Value: strings.TrimLeft(xl.Data[0:32], "0")})
@@ -151,9 +158,48 @@ func (xl XlMessage) RemoteStartCharging(cmd int) (data Data) {
 	return
 }
 
+func (xl XlMessage) OrderLogBus() (data Data) {
+	data.Cmd = xl.Command
+	data.Remark = "汽车桩订单上传"
+	// 解析数据
+	data.List = append(data.List, Item{Key: "交易流水号", Value: strings.TrimLeft(xl.Data[0:32], "0")})
+	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[32:46], "0")})
+	data.List = append(data.List, Item{Key: "枪号", Value: getParseData(xl.Data[46:48], Bin)})
+	data.List = append(data.List, Item{Key: "开始时间", Value: getParseData(xl.Data[48:62], CpTIme)})
+	data.List = append(data.List, Item{Key: "结束时间", Value: getParseData(xl.Data[62:76], CpTIme)})
+	data.List = append(data.List, Item{Key: "尖单价", Value: getParseData(xl.Data[76:84], Bin)})
+	data.List = append(data.List, Item{Key: "尖电量", Value: getParseData(xl.Data[84:92], Bin)})
+	data.List = append(data.List, Item{Key: "计损尖电量", Value: getParseData(xl.Data[92:100], Bin)})
+	data.List = append(data.List, Item{Key: "尖金额", Value: getParseData(xl.Data[100:108], Bin)})
+	data.List = append(data.List, Item{Key: "峰单价", Value: getParseData(xl.Data[108:116], Bin)})
+	data.List = append(data.List, Item{Key: "峰电量", Value: getParseData(xl.Data[116:124], Bin)})
+	data.List = append(data.List, Item{Key: "计损峰电量", Value: getParseData(xl.Data[124:132], Bin)})
+	data.List = append(data.List, Item{Key: "峰金额", Value: getParseData(xl.Data[132:140], Bin)})
+	data.List = append(data.List, Item{Key: "平单价", Value: getParseData(xl.Data[140:148], Bin)})
+	data.List = append(data.List, Item{Key: "平电量", Value: getParseData(xl.Data[148:156], Bin)})
+	data.List = append(data.List, Item{Key: "计损平电量", Value: getParseData(xl.Data[156:164], Bin)})
+	data.List = append(data.List, Item{Key: "平金额", Value: getParseData(xl.Data[164:172], Bin)})
+	data.List = append(data.List, Item{Key: "谷单价", Value: getParseData(xl.Data[172:180], Bin)})
+	data.List = append(data.List, Item{Key: "谷电量", Value: getParseData(xl.Data[180:188], Bin)})
+	data.List = append(data.List, Item{Key: "计损谷电量", Value: getParseData(xl.Data[188:196], Bin)})
+	data.List = append(data.List, Item{Key: "谷金额", Value: getParseData(xl.Data[196:204], Bin)})
+	data.List = append(data.List, Item{Key: "电表总起值", Value: getParseData(xl.Data[204:212], Bin)})
+	data.List = append(data.List, Item{Key: "电表总止值", Value: getParseData(xl.Data[212:220], Bin)})
+	data.List = append(data.List, Item{Key: "总电量", Value: getParseData(xl.Data[220:228], Bin)})
+	data.List = append(data.List, Item{Key: "计损总电量", Value: getParseData(xl.Data[228:236], Bin)})
+	data.List = append(data.List, Item{Key: "消费金额", Value: getParseData(xl.Data[236:244], Bin)})
+	data.List = append(data.List, Item{Key: "电动汽车唯一标识", Value: getParseData(xl.Data[244:278], Ascii)})
+	data.List = append(data.List, Item{Key: "交易标识", Value: getParseData(xl.Data[278:280], Bin)})
+	data.List = append(data.List, Item{Key: "交易日期、时间", Value: getParseData(xl.Data[280:294], CpTIme)})
+	data.List = append(data.List, Item{Key: "停止原因", Value: getParseData(xl.Data[294:296], Bin)})
+	data.List = append(data.List, Item{Key: "物理卡号", Value: getParseData(xl.Data[296:312], Bin)})
+
+	return
+}
+
 // XlUpdateUserMoney 更新用户余额
-func (xl XlMessage) XlUpdateUserMoney(cmd int) (data Data) {
-	data.Cmd = cmd
+func (xl XlMessage) XlUpdateUserMoney() (data Data) {
+	data.Cmd = xl.Command
 	data.Remark = "更新用户余额"
 	// 解析数据
 	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[0:14], "0")})
@@ -165,8 +211,8 @@ func (xl XlMessage) XlUpdateUserMoney(cmd int) (data Data) {
 }
 
 // XlUserMoneyUpdateBack 更新用户余额应答
-func (xl XlMessage) XlUserMoneyUpdateBack(cmd int) (data Data) {
-	data.Cmd = cmd
+func (xl XlMessage) XlUserMoneyUpdateBack() (data Data) {
+	data.Cmd = xl.Command
 	data.Remark = "更新用户余额应答"
 	// 解析数据
 	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[0:14], "0")})
@@ -189,6 +235,8 @@ func getParseData(str string, f HexParse) (res string) {
 		res = utils.RevertTwoByte(str)
 	case Card2:
 		res = utils.RevertTwoByte(str)
+	case Ascii:
+		res = string(utils.StringToByte(str))
 	}
 
 	return
