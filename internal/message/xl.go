@@ -15,6 +15,7 @@ const (
 	XlUserMoneyUpdateBack  = 0x41
 	XlUpdateUserMoney      = 0x42
 	XlStartChargingBicycle = 0x74
+	XlBalanceModelSetting  = 0x58
 )
 
 type HexParse int
@@ -89,6 +90,9 @@ func (xl XlMessage) GetParseData() (data Data) {
 	case XlStartChargingBicycle:
 		fmt.Println("小蓝单车启动充电")
 		data = xl.XlStartChargingBicycle()
+	case XlBalanceModelSetting:
+		fmt.Println("交流桩计费模型设置")
+		data = xl.XlBalanceModelSetting()
 	}
 
 	return
@@ -268,6 +272,31 @@ func (xl XlMessage) XlStartChargingBicycle() (data Data) {
 	data.List = append(data.List, Item{Key: "功率分段7（功 率）", Value: getParseData(xl.Data[180:184], Bin)})
 	data.List = append(data.List, Item{Key: "功率分段8(单 价)", Value: getParseData(xl.Data[184:188], Bin)})
 	data.List = append(data.List, Item{Key: "功率分段8（功 率）", Value: getParseData(xl.Data[188:192], Bin)})
+
+	return
+}
+
+// XlBalanceModelSetting 交流桩计费模型设置
+func (xl XlMessage) XlBalanceModelSetting() (data Data) {
+	data.Cmd = xl.Command
+	data.Remark = "交流桩计费模型设置"
+	// 解析数据
+	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[0:14], "0")})
+	data.List = append(data.List, Item{Key: "计费模型编号", Value: getParseData(xl.Data[14:18], Bin)})
+	data.List = append(data.List, Item{Key: "尖费电费费率", Value: getParseData(xl.Data[18:26], Bin)})
+	data.List = append(data.List, Item{Key: "尖服务费费率", Value: getParseData(xl.Data[26:34], Bin)})
+	data.List = append(data.List, Item{Key: "峰电费费率", Value: getParseData(xl.Data[34:42], Bin)})
+	data.List = append(data.List, Item{Key: "峰服务费费率", Value: getParseData(xl.Data[42:50], Bin)})
+	data.List = append(data.List, Item{Key: "平电费费率", Value: getParseData(xl.Data[50:58], Bin)})
+	data.List = append(data.List, Item{Key: "平服务费费率", Value: getParseData(xl.Data[58:66], Bin)})
+	data.List = append(data.List, Item{Key: "谷电费费率", Value: getParseData(xl.Data[66:74], Bin)})
+	data.List = append(data.List, Item{Key: "谷服务费费率", Value: getParseData(xl.Data[74:82], Bin)})
+	data.List = append(data.List, Item{Key: "计损比例", Value: getParseData(xl.Data[82:84], Bin)})
+	data.List = append(data.List, Item{Key: "0：00～0：30时段费率号", Value: getParseData(xl.Data[84:86], Bin)})
+	data.List = append(data.List, Item{Key: "0：30～1：00时段费率号", Value: getParseData(xl.Data[100:102], Bin)})
+	data.List = append(data.List, Item{Key: "......", Value: getParseData(xl.Data[102:104], Bin)})
+	data.List = append(data.List, Item{Key: "23：00～23：30时段费率号", Value: getParseData(xl.Data[104:106], Bin)})
+	data.List = append(data.List, Item{Key: "23：30～0：00时段费率号", Value: getParseData(xl.Data[106:108], Bin)})
 
 	return
 }
