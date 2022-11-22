@@ -160,7 +160,7 @@ func (xl XlMessage) RemoteStartCharging() (data Data) {
 	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[32:46], "0")})
 	data.List = append(data.List, Item{Key: "枪号", Value: strings.TrimLeft(xl.Data[46:48], "0")})
 	data.List = append(data.List, Item{Key: "逻辑卡号", Value: strings.TrimLeft(xl.Data[48:64], "0")})
-	data.List = append(data.List, Item{Key: "物理卡号", Value: getParseData(xl.Data[64:80], Bin)})
+	data.List = append(data.List, Item{Key: "物理卡号", Value: strings.TrimLeft(xl.Data[64:80], "0")})
 	data.List = append(data.List, Item{Key: "账户余额", Value: getParseData(xl.Data[80:88], Bin)})
 
 	return
@@ -212,7 +212,7 @@ func (xl XlMessage) XlUpdateUserMoney() (data Data) {
 	// 解析数据
 	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[0:14], "0")})
 	data.List = append(data.List, Item{Key: "枪号", Value: strings.TrimLeft(xl.Data[14:16], "0")})
-	data.List = append(data.List, Item{Key: "物理卡号", Value: getParseData(xl.Data[16:32], Bin)})
+	data.List = append(data.List, Item{Key: "物理卡号", Value: strings.TrimLeft(xl.Data[16:32], "0")})
 	data.List = append(data.List, Item{Key: "账户余额", Value: getParseData(xl.Data[32:40], Bin)})
 
 	return
@@ -224,7 +224,7 @@ func (xl XlMessage) XlUserMoneyUpdateBack() (data Data) {
 	data.Remark = "更新用户余额应答"
 	// 解析数据
 	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[0:14], "0")})
-	data.List = append(data.List, Item{Key: "物理卡号", Value: getParseData(xl.Data[14:30], Bin)})
+	data.List = append(data.List, Item{Key: "物理卡号", Value: strings.TrimLeft(xl.Data[14:30], "0")})
 	data.List = append(data.List, Item{Key: "修改结果", Value: getParseData(xl.Data[30:32], Bin)})
 
 	return
