@@ -22,7 +22,7 @@ func main() {
 	a.SetIcon(theme.FyneLogo())
 	// 声明周期
 	logLifecycle(a)
-	w := a.NewWindow("Fyne Demo")
+	w := a.NewWindow("协议解析工具")
 	topWindow = w
 
 	w.SetMaster()
