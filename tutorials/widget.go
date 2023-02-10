@@ -100,7 +100,7 @@ func handleTableData(_ fyne.Window, msg string, flag device.DeviceType) fyne.Can
 
 	res.Set(fmt.Sprintf("数据解析成功！(cmd: 0x%x; %s)", data.Cmd, data.Remark))
 
-	c := container.NewVBox(widget.NewLabelWithData(res), container.New(layout.NewGridWrapLayout(fyne.NewSize(640, 460)), t))
+	c := container.NewVBox(widget.NewLabelWithData(res), container.New(layout.NewGridWrapLayout(fyne.NewSize(640, 1000)), t))
 	return c
 
 }
