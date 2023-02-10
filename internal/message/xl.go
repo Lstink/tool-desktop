@@ -17,6 +17,7 @@ const (
 	XlStartChargingBicycle = 0x74
 	XlBalanceModelSetting  = 0x58
 	XlBusRealTimeData      = 0x11
+	XlRealTimeData         = 0x26
 )
 
 type HexParse int
@@ -95,6 +96,9 @@ func (xl XlMessage) GetParseData() (data Data) {
 	case XlBusRealTimeData:
 		fmt.Println("汽车桩实时数据")
 		data = xl.XlBusRealTimeData()
+	case XlRealTimeData:
+		fmt.Println("单车桩实时数据")
+		data = xl.XlRealTimeData()
 	}
 
 	return
@@ -327,6 +331,34 @@ func (xl XlMessage) XlBusRealTimeData() (data Data) {
 	data.List = append(data.List, Item{Key: "已充金额", Value: getParseData(xl.Data[108:116], Bin)})
 	data.List = append(data.List, Item{Key: "系统故障", Value: getParseData(xl.Data[116:132], Bin)})
 	data.List = append(data.List, Item{Key: "系统告警", Value: getParseData(xl.Data[132:148], Bin)})
+
+	return
+}
+
+func (xl XlMessage) XlRealTimeData() (data Data) {
+	data.Cmd = xl.Command
+	data.Remark = "单车桩实时数据"
+	// 解析数据
+	data.List = append(data.List, Item{Key: "交易流水号", Value: strings.TrimLeft(xl.Data[0:32], "0")})
+	data.List = append(data.List, Item{Key: "桩编号", Value: strings.TrimLeft(xl.Data[32:46], "0")})
+	data.List = append(data.List, Item{Key: "枪号", Value: strings.TrimLeft(xl.Data[46:48], "0")})
+	data.List = append(data.List, Item{Key: "状态", Value: getParseData(xl.Data[48:50], Bin)})
+	data.List = append(data.List, Item{Key: "是否插枪", Value: getParseData(xl.Data[50:52], Bin)})
+	data.List = append(data.List, Item{Key: "当前充电功率", Value: getParseData(xl.Data[52:56], Bin)})
+	data.List = append(data.List, Item{Key: "输出电压", Value: getParseData(xl.Data[56:60], Bin)})
+	data.List = append(data.List, Item{Key: "输出电流", Value: getParseData(xl.Data[60:64], Bin)})
+	data.List = append(data.List, Item{Key: "温度", Value: getParseData(xl.Data[64:66], Bin)})
+	data.List = append(data.List, Item{Key: "灭火器状态", Value: getParseData(xl.Data[66:68], Bin)})
+	data.List = append(data.List, Item{Key: "烟感状态", Value: getParseData(xl.Data[68:70], Bin)})
+	data.List = append(data.List, Item{Key: "SOC", Value: getParseData(xl.Data[70:72], Bin)})
+	data.List = append(data.List, Item{Key: "柜门/门禁/道闸状态", Value: getParseData(xl.Data[72:74], Bin)})
+	data.List = append(data.List, Item{Key: "累计已充电时间", Value: getParseData(xl.Data[74:78], Bin)})
+	data.List = append(data.List, Item{Key: "总充电时长", Value: getParseData(xl.Data[78:82], Bin)})
+	data.List = append(data.List, Item{Key: "充电度数", Value: getParseData(xl.Data[82:90], Bin)})
+	data.List = append(data.List, Item{Key: "计损充电度数", Value: getParseData(xl.Data[90:98], Bin)})
+	data.List = append(data.List, Item{Key: "已充金额", Value: getParseData(xl.Data[98:106], Bin)})
+	data.List = append(data.List, Item{Key: "系统故障", Value: getParseData(xl.Data[106:122], Bin)})
+	data.List = append(data.List, Item{Key: "系统告警", Value: getParseData(xl.Data[122:138], Bin)})
 
 	return
 }
