@@ -2,4 +2,4 @@
   Icon = "../../theme/icons/fyne.png"
   Name = "tool-desktop"
   ID = "tool.lstink.app"
-  Build = 1
+  Build = 5

@@ -1,16 +1,14 @@
 package main
 
 import (
+	_ "embed"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/flopp/go-findfont"
-	"github.com/goki/freetype/truetype"
 	"log"
 	"lstink.github.com/lstink/tool-desktop/tutorials"
-	"os"
 )
 
 const preferenceCurrentTutorial = "currentTutorial"
@@ -19,6 +17,7 @@ var topWindow fyne.Window
 
 func main() {
 	a := app.NewWithID("io.fyne.demo")
+	a.Settings().SetTheme(&myTheme{})
 	a.SetIcon(theme.FyneLogo())
 	// 声明周期
 	logLifecycle(a)
@@ -128,32 +127,12 @@ func makeNav(setTutorial func(tutorial tutorials.Tutorial), loadPrevious bool) f
 
 	themes := container.NewGridWithColumns(2,
 		widget.NewButton("Dark", func() {
-			a.Settings().SetTheme(theme.DarkTheme())
+			a.Settings().SetTheme(&myTheme{})
 		}),
 		widget.NewButton("Light", func() {
-			a.Settings().SetTheme(theme.LightTheme())
+			a.Settings().SetTheme(&myTheme{})
 		}),
 	)
 
 	return container.NewBorder(nil, themes, nil, nil, tree)
-}
-
-// 字体
-func init() {
-	fontPath, err := findfont.Find("font/1.ttf")
-	if err != nil {
-		panic(err)
-	}
-
-	// load the font with the freetype library
-	// 原作者使用的ioutil.ReadFile已经弃用
-	fontData, err := os.ReadFile(fontPath)
-	if err != nil {
-		panic(err)
-	}
-	_, err = truetype.Parse(fontData)
-	if err != nil {
-		panic(err)
-	}
-	os.Setenv("FYNE_FONT", fontPath)
 }
