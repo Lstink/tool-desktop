@@ -1,8 +1,0 @@
-version: '3.8'
-services:
-  myapp:
-    build:
-      context: .
-      dockerfile: docker/windows/Dockerfile
-    volumes:
-      - .:/app

@@ -2,11 +2,7 @@ module lstink.github.com/lstink/tool-desktop
 
 go 1.19
 
-require (
-	fyne.io/fyne/v2 v2.2.4
-	github.com/flopp/go-findfont v0.1.0
-	github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff
-)
+require fyne.io/fyne/v2 v2.2.4
 
 require (
 	fyne.io/systray v1.10.1-0.20220621085403-9a2652634e93 // indirect
@@ -19,6 +15,7 @@ require (
 	github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20211213063430-748e38ca8aec // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
+	github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/jsummers/gobmp v0.0.0-20151104160322-e2ba15ffa76e // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
