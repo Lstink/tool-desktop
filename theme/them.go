@@ -11,7 +11,6 @@ type MyTheme struct{}
 
 var _ fyne.Theme = (*MyTheme)(nil)
 
-// return bundled font resource
 func (*MyTheme) Font(s fyne.TextStyle) fyne.Resource {
 	if s.Monospace {
 		return theme.DefaultTheme().Font(s)

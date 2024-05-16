@@ -23,8 +23,8 @@ func HexToTen(str string) int {
 
 // StringToByte 十六进制字符串转byte切片
 func StringToByte(str string) []byte {
-	bytes, _ := hex.DecodeString(str)
-	return bytes
+	decodeString, _ := hex.DecodeString(str)
+	return decodeString
 }
 
 // Crc16Check crc16校验
