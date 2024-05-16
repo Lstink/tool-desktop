@@ -1,13 +1,13 @@
 package main
 
 import (
-	_ "embed"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"log"
+	theme2 "lstink.github.com/lstink/tool-desktop/theme"
 	"lstink.github.com/lstink/tool-desktop/tutorials"
 )
 
@@ -17,7 +17,7 @@ var topWindow fyne.Window
 
 func main() {
 	a := app.NewWithID("io.fyne.demo")
-	a.Settings().SetTheme(&myTheme{})
+	a.Settings().SetTheme(&theme2.MyTheme{})
 	a.SetIcon(theme.FyneLogo())
 	// 声明周期
 	logLifecycle(a)
@@ -127,10 +127,10 @@ func makeNav(setTutorial func(tutorial tutorials.Tutorial), loadPrevious bool) f
 
 	themes := container.NewGridWithColumns(2,
 		widget.NewButton("Dark", func() {
-			a.Settings().SetTheme(&myTheme{})
+			a.Settings().SetTheme(&theme2.MyDarkTheme{})
 		}),
 		widget.NewButton("Light", func() {
-			a.Settings().SetTheme(&myTheme{})
+			a.Settings().SetTheme(&theme2.MyLightTheme{})
 		}),
 	)
 
